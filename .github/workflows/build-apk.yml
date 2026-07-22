@@ -28,6 +28,14 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Generate Icon and Splash Screen
+        run: |
+          mkdir -p assets
+          mv icon.png assets/ 2>/dev/null || true
+          mv splash.png assets/ 2>/dev/null || true
+          npm install @capacitor/assets -D
+          npx @capacitor/assets generate --android
+
       - name: Add Permissions (SMS & Call)
         run: |
           sed -i '/<application/i \    <uses-permission android:name="android.permission.CALL_PHONE" />\n    <uses-permission android:name="android.permission.RECEIVE_SMS" />\n    <uses-permission android:name="android.permission.READ_SMS" />' android/app/src/main/AndroidManifest.xml
