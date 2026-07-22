@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashpoint Automation - Offline App</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --primary: #1e88e5;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --warning: #f57c00;
+            --purple: #8e44ad;
+            --border: #e0e0e0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 90px; }
+        header { background-color: #1565c0; color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.2rem; font-weight: 600; }
+        .container { padding: 12px; max-width: 800px; margin: 0 auto; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+        .stat-card .title { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+        .stat-card .value { font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
+        
+        .card { background: var(--card-bg); border-radius: 8px; padding: 15px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .card h2 { font-size: 1rem; margin-bottom: 12px; color: #1565c0; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; }
+        
+        .operator-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .btn-op { padding: 10px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; font-size: 0.85rem; }
+        .btn-mvola { background-color: #008827; }
+        .btn-orange { background-color: #ff6600; }
+
+        .form-group { margin-bottom: 10px; }
+        label { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+        
+        .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; margin-bottom: 5px; }
+        .btn-achat { background-color: var(--purple); }
+        .btn-export { background-color: #27ae60; }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: #f8f9fa; color: #555; font-weight: 600; }
+        
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
+        .badge-depot { background-color: var(--success); }
+        .badge-retrait { background-color: var(--danger); }
+        .badge-transfert { background-color: var(--warning); }
+        .badge-achat { background-color: var(--purple); }
+
+        .solde-footer { background-color: #e3f2fd; font-weight: bold; text-align: right; }
+        .copyright-tag { text-align: center; font-size: 0.75rem; color: #777; margin-top: 15px; font-weight: 600; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { text-align: center; color: #666; font-size: 0.75rem; text-decoration: none; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CASHPOINT AUTOMATION</h1>
+    </header>
+
+    <div class="container">
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            
+            <!-- 1. Lancer USSD (Eo ambony indrindra) -->
+            <div class="card">
+                <h2>Lancer USSD (Miantso)</h2>
+                <div class="operator-btns">
+                    <button class="btn-op btn-mvola" onclick="selectOperator('Mvola')">Mvola</button>
+                    <button class="btn-op btn-orange" onclick="selectOperator('Orange')">Orange</button>
+                </div>
+                <form id="ussd-form">
+                    <div class="form-group">
+                        <label>Opérateur:</label>
+                        <input type="text" id="selected-op" value="Mvola" readonly style="background-color:#eee;">
+                    </div>
+                    <div class="form-group">
+                        <label>Kaody USSD na Laharana:</label>
+                        <input type="text" id="ussd-code" placeholder="oh: *141*1*1*0340000000*10000#">
+                    </div>
+                    <button type="button" class="btn-submit" onclick="launchUSSDCall()">LANSERO NY APPEL</button>
+                    <button type="button" class="btn-submit btn-achat" onclick="lancerAchatCreditMvola()">ACHAT CRÉDIT MVOLA (#111*1#)</button>
+                </form>
+            </div>
+
+            <!-- 2. Famintinana (Eo anelanelany) -->
+            <div class="card" style="background-color: #f8f9fa;">
+                <h2 style="border-bottom: 2px solid var(--border); color: #333;">Famintinana</h2>
+                
+                <div class="stats-grid">
+                    <!-- Isan'ny asa vita -->
+                    <div class="stat-card"><div class="title">Isan'ny Dépôt</div><div class="value" id="count-depot" style="color: var(--success);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Retrait</div><div class="value" id="count-retrait" style="color: var(--danger);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Transfert</div><div class="value" id="count-transfert" style="color: var(--warning);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Achat</div><div class="value" id="count-achat" style="color: var(--purple);">0</div></div>
+                    
+                    <!-- Solde & Bonus -->
+                    <div class="stat-card" style="background-color: #e8f5e9;"><div class="title">Solde Farany</div><div class="value" id="stat-solde-farany" style="color: #1b5e20;">0 Ar</div></div>
+                    <div class="stat-card" style="background-color: #f3e5f5;"><div class="title">Bonus Androany</div><div class="value" id="stat-bonus-androany" style="color: #4a148c;">0 Ar</div></div>
+                    <div class="stat-card" style="background-color: #fff3e0;"><div class="title">Bonus (Sabotsy)</div><div class="value" id="stat-bonus-sabotsy" style="color: #e65100;">0 Ar</div></div>
+                    <div class="stat-card" style="background-color: #e1f5fe;"><div class="title">Bonus Volana (Sabotsy Farany)</div><div class="value" id="stat-bonus-volana" style="color: #01579b;">0 Ar</div></div>
+                </div>
+            </div>
+
+            <!-- 3. Tranzaksion Farany -->
+            <div class="card">
+                <h2>Tranzaksion Farany</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ora/Daty</th>
+                                <th>Karazana</th>
+                                <th>Laharana</th>
+                                <th>Montant</th>
+                                <th>Solde Sisa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tx-tbody">
+                            <tr><td colspan="5" style="text-align:center;">Tsy mbola misy tranzaksion...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: JOURNAL / HISTORIQUE -->
+        <div id="tab-journal" class="tab-content">
+            <div class="card">
+                <h2>Bokin'ny Vola / Journal de Caisse</h2>
+                <button type="button" class="btn-submit btn-export" onclick="exportToCSV()" style="margin-bottom: 15px;">💾 EXPORT CSV (EXCEL)</button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Daty & Ora</th>
+                                <th>Opérateur</th>
+                                <th>Karazana</th>
+                                <th>Laharana</th>
+                                <th>Montant</th>
+                                <th>Bonus</th>
+                                <th>Ref</th>
+                                <th>Solde</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-journal-tbody">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="7" class="solde-footer">SOLDE FARANY:</td>
+                                <td id="footer-solde-farany" class="solde-footer" style="color: var(--danger);">0 Ar</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SETTINGS -->
+        <div id="tab-settings" class="tab-content">
+            <div class="card">
+                <h2>Paramètres / Configurations</h2>
+                <p style="font-size:0.85rem; color:#666; margin-bottom:12px;">App miasa 100% Offline mampiasa IndexedDB.</p>
+                <button type="button" class="btn-submit btn-export" onclick="exportToCSV()">💾 EXPORT NY BOKIN'NY VOLA</button>
+                <button class="btn-submit" style="background-color: var(--danger);" onclick="famafanaArovanaAminKaody()">FAFAHO NY DATA REHETRA (RESET)</button>
+            </div>
+        </div>
+
+        <div class="copyright-tag">
+            Mr Mbola (c)
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchTab('dashboard')"><div>📊</div><div>Dashboard</div></div>
+        <div class="nav-item" onclick="switchTab('journal')"><div>📖</div><div>Journal</div></div>
+        <div class="nav-item" onclick="switchTab('settings')"><div>⚙️</div><div>Settings</div></div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
