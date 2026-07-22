@@ -1,0 +1,6 @@
+{
+  "appId": "com.cashpoint.app",
+  "appName": "Cashpoint App",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
