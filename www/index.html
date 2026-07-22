@@ -1,1 +1,134 @@
+<!DOCTYPE html>
+<html lang="mg" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Point Tendry</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <h2>Cash Point Tendry</h2>
+        <button class="menu-btn active" id="btn-accueil">🏠 Accueil</button>
+        <button class="menu-btn" id="btn-journal">📝 Compte Journalier</button>
+        <button class="menu-btn" id="btn-parametres">⚙️ Capital & Historique</button>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="menu-btn">🌙</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- MENU 1 : ACCUEIL -->
+        <div id="accueil" class="section active">
+            <h1 class="section-title">Dashboard</h1>
+            <div class="grid-cards">
+                <div class="card">
+                    <h3>Tombony Androany</h3>
+                    <p id="tombony-androany">0 Ar</p>
+                </div>
+                <div class="card">
+                    <h3>Tombony Omaly</h3>
+                    <p id="tombony-omaly">0 Ar</p>
+                </div>
+                <div class="card">
+                    <h3>Stock 2Toi a Moi (Omaly)</h3>
+                    <p id="stock-omaly">0 Ar</p>
+                </div>
+            </div>
+            <button class="btn-valider" style="max-width: 300px; display: block; margin: 20px auto;" id="btn-start-compte">Manao Compte Journalier ➔</button>
+        </div>
+
+        <!-- MENU 2 : COMPTE JOURNALIER -->
+        <div id="journal" class="section">
+            <h1 class="section-title">Saisie Journalière</h1>
+            <div class="form-grid">
+                <div class="input-group"><label>Espèce</label><input type="number" id="espece" value="0"></div>
+                <div class="input-group"><label>Stock 2Toi a Moi</label><input type="number" id="stock2toi" value="0"></div>
+                <div class="input-group"><label>Solde MVola</label><input type="number" id="mvola" value="0"></div>
+                <div class="input-group"><label>Solde Orange Money</label><input type="number" id="orange" value="0"></div>
+                <div class="input-group"><label>Phone Neny</label><input type="number" id="neny" value="0"></div>
+                <div class="input-group"><label>Phone Dada</label><input type="number" id="dada" value="0"></div>
+                <div class="input-group"><label>Phone Tendry</label><input type="number" id="tendry" value="0"></div>
+                <div class="input-group"><label>Phone Autre</label><input type="number" id="autre" value="0"></div>
+                <div class="input-group"><label>Phone RAS</label><input type="number" id="ras" value="0"></div>
+                
+                <button class="btn-valider" id="btn-valider-compte">Valider ny Compte</button>
+            </div>
+        </div>
+
+        <!-- MENU 3 : CAPITAL & HISTORIQUE -->
+        <div id="parametres" class="section">
+            <h1 class="section-title">Fitantanana Capital & Tombony</h1>
+            
+            <div class="grid-cards" style="margin-bottom: 30px;">
+                <div class="card">
+                    <h3>Capital Miasa (Tsindrio raha hijery - Misy MDP)</h3>
+                    <p id="capital-display" class="hidden-capital">*** Ar</p>
+                    <button class="btn-valider" style="background:#4b5563; font-size:0.9rem; margin-top:10px;" id="btn-modifier-capital">Manova Capital</button>
+                </div>
+            </div>
+
+            <!-- Fizarana Tombony isan-kerinandro (Tsy misy MDP) -->
+            <h2 class="section-title">Fizarana Tombony (Herinandro Ity)</h2>
+            <div class="tombony-grid-container">
+                <div class="card-tombony compte-tendry">
+                    <div class="card-icon">📊</div>
+                    <div class="card-details">
+                        <span class="card-title">Compte Tendry (1/6)</span>
+                        <h3 id="display-compte-tendry">0 Ar</h3>
+                    </div>
+                </div>
+                
+                <div class="card-tombony compte-irene">
+                    <div class="card-icon">💼</div>
+                    <div class="card-details">
+                        <span class="card-title">Compte Irene (1/4)</span>
+                        <h3 id="display-compte-irene">0 Ar</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historique des Semaines + Bouton Export Excel -->
+            <div class="header-flex">
+                <h2 class="section-title" style="border:none; margin:0;">Historique des Semaines</h2>
+                <button class="btn-valider" id="btn-export-excel" style="width: auto; padding: 8px 15px; margin: 0 0 15px 0;">📥 Export Excel (CSV)</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Herinandro (Semaine)</th>
+                        <th>Total Tombony</th>
+                        <th>Tendry (1/6)</th>
+                        <th>Irene (1/4)</th>
+                    </tr>
+                </thead>
+                <tbody id="historique-semaines-body">
+                    <!-- Data avy amin'ny JS -->
+                </tbody>
+            </table>
+
+            <h2 class="section-title" style="margin-top: 30px;">Historique Journalier</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Profit Journalier</th>
+                    </tr>
+                </thead>
+                <tbody id="historique-body">
+                    <!-- Data avy amin'ny JS -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
