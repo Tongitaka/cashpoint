@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cashpoint.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Permissions ilaina amin'ny Calls USSD sy SMS -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -29,5 +28,16 @@
             </intent-filter>
 
         </activity>
+
+        <!-- Receiver ilaina handraisana ny SMS miditra amin'ny fotoana tena izy -->
+        <receiver 
+            android:name=".SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
