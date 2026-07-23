@@ -36,7 +36,12 @@
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
+            </intnt-filter>
+                <receiver android:name="com.cordova.plugins.smsreceive.SMSReceiver" android:exported="true">
+    <intent-filter>
+        <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+    </intent-filter>
+</receiver>
         </receiver>
 
     </application>
