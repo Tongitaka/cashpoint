@@ -24,7 +24,7 @@ jobs:
       - name: Create Complete Android Project
         run: |
           rm -rf android Android
-          npm install @capacitor/android
+          npm install @capacitor/android cordova-plugin-sms-receive
           npx cap add android
           npx cap sync android
 
