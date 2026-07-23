@@ -1,1 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.mrmbola.cashpoint" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Cashpoint Automation</name>
+    <description>Cashpoint Management with Automatic SMS Reader</description>
+    <author email="dev@cashpoint.com">Mr Mbola info</author>
+    <content src="index_2.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
 
+    <!-- Ampidirina ireo Plugins Native ilaina -->
+    <plugin name="cordova-plugin-sms-receive" spec="^1.0.2" />
+    <plugin name="call-number" spec="1.0.1" />
+
+    <!-- Ampidirina ny Permissions ho an'ny Android -->
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.RECEIVE_SMS" />
+            <uses-permission android:name="android.permission.READ_SMS" />
+            <uses-permission android:name="android.permission.CALL_PHONE" />
+        </config-file>
+    </platform>
+</widget>
