@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashpoint Automation - Offline App</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --purple: #9333ea;
+            --border: #e2e8f0;
+            --navbar-bg: #ffffff;
+            --table-header: #f1f5f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --purple: #a855f7;
+            --border: #334155;
+            --navbar-bg: #1e293b;
+            --table-header: #0f172a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 90px; transition: background 0.3s ease, color 0.3s ease; }
+        
+        header { background: linear-gradient(135deg, #1e40af, #2563eb); color: white; padding: 16px 20px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; flex-grow: 1; }
+        .theme-toggle { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .theme-toggle:hover { background: rgba(255,255,255,0.3); }
+
+        .container { padding: 16px; max-width: 800px; margin: 0 auto; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .stat-card .title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .stat-card .value { font-size: 1.2rem; font-weight: 800; margin-top: 6px; }
+        
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .card h2 { font-size: 1rem; margin-bottom: 14px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; font-weight: 700; }
+        
+        .operator-btns { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+        .btn-op { padding: 12px; border: none; border-radius: 8px; font-weight: 700; color: white; cursor: pointer; font-size: 0.9rem; transition: opacity 0.2s; }
+        .btn-op:active { opacity: 0.8; }
+        .btn-mvola { background-color: #059669; }
+        .btn-orange { background-color: #ea580c; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--text-muted); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: var(--card-bg); color: var(--text-color); outline: none; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        
+        .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-bottom: 8px; transition: background-color 0.2s; }
+        .btn-submit:hover { background-color: var(--primary-hover); }
+        .btn-achat { background-color: var(--purple); }
+        .btn-export { background-color: var(--success); }
+        .btn-test { background-color: var(--warning); color: #000; }
+
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: var(--table-header); color: var(--text-muted); font-weight: 700; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; color: white; display: inline-block; }
+        .badge-depot { background-color: var(--success); }
+        .badge-retrait { background-color: var(--danger); }
+        .badge-transfert { background-color: var(--warning); color: #000; }
+        .badge-achat { background-color: var(--purple); }
+
+        .solde-footer { background-color: var(--table-header); font-weight: 800; text-align: right; }
+        .copyright-tag { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; font-weight: 600; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--navbar-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 0.75rem; text-decoration: none; cursor: pointer; font-weight: 600; transition: color 0.2s; }
+        .nav-item.active { color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header>
+        <h1>CASHPOINT AUTOMATION</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    </header>
+
+    <div class="container">
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            
+            <!-- 1. Lancer USSD -->
+            <div class="card">
+                <h2>Lancer USSD (Miantso)</h2>
+                <div class="operator-btns">
+                    <button class="btn-op btn-mvola" onclick="selectOperator('Mvola')">Mvola</button>
+                    <button class="btn-op btn-orange" onclick="selectOperator('Orange')">Orange</button>
+                </div>
+                <form id="ussd-form">
+                    <div class="form-group">
+                        <label>Opérateur:</label>
+                        <input type="text" id="selected-op" value="Mvola" readonly style="opacity: 0.7;">
+                    </div>
+                    <div class="form-group">
+                        <label>Kaody USSD na Laharana:</label>
+                        <input type="text" id="ussd-code" placeholder="oh: *141*1*1*0340000000*10000#">
+                    </div>
+                    <button type="button" class="btn-submit" onclick="launchUSSDCall()">LANSERO NY APPEL</button>
+                    <button type="button" class="btn-submit btn-achat" onclick="lancerAchatCreditMvola()">ACHAT CRÉDIT MVOLA (#111*1#)</button>
+                </form>
+            </div>
+
+            <!-- 2. Famintinana -->
+            <div class="card">
+                <h2>Famintinana</h2>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="title">Isan'ny Dépôt</div><div class="value" id="count-depot" style="color: var(--success);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Retrait</div><div class="value" id="count-retrait" style="color: var(--danger);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Transfert</div><div class="value" id="count-transfert" style="color: var(--warning);">0</div></div>
+                    <div class="stat-card"><div class="title">Isan'ny Achat</div><div class="value" id="count-achat" style="color: var(--purple);">0</div></div>
+                    
+                    <div class="stat-card"><div class="title">Solde Farany</div><div class="value" id="stat-solde-farany" style="color: var(--primary);">0 Ar</div></div>
+                    <div class="stat-card"><div class="title">Bonus Androany</div><div class="value" id="stat-bonus-androany" style="color: var(--success);">0 Ar</div></div>
+                    <div class="stat-card"><div class="title">Bonus (Sabotsy)</div><div class="value" id="stat-bonus-sabotsy" style="color: var(--warning);">0 Ar</div></div>
+                    <div class="stat-card"><div class="title">Bonus Volana</div><div class="value" id="stat-bonus-volana" style="color: var(--purple);">0 Ar</div></div>
+                </div>
+            </div>
+
+            <!-- 3. Tranzaksion Farany -->
+            <div class="card">
+                <h2>Tranzaksion Farany</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ora/Daty</th>
+                                <th>Karazana</th>
+                                <th>Laharana</th>
+                                <th>Montant</th>
+                                <th>Solde Sisa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tx-tbody">
+                            <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Tsy mbola misy tranzaksion...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: JOURNAL / HISTORIQUE -->
+        <div id="tab-journal" class="tab-content">
+            <div class="card">
+                <h2>Bokin'ny Vola / Journal de Caisse</h2>
+                <button type="button" class="btn-submit btn-export" onclick="exportToCSV()" style="margin-bottom: 16px;">💾 EXPORT CSV (EXCEL)</button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Daty & Ora</th>
+                                <th>Opérateur</th>
+                                <th>Karazana</th>
+                                <th>Laharana</th>
+                                <th>Montant</th>
+                                <th>Bonus</th>
+                                <th>Ref</th>
+                                <th>Solde</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-journal-tbody">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="7" class="solde-footer">SOLDE FARANY:</td>
+                                <td id="footer-solde-farany" class="solde-footer" style="color: var(--danger);">0 Ar</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SETTINGS -->
+        <div id="tab-settings" class="tab-content">
+            <!-- CADRE TEST SMS AO AMIN'NY PARAMETRES -->
+            <div class="card" style="border: 2px dashed var(--warning);">
+                <h2>📥 Simulateur de Test SMS</h2>
+                <div class="form-group">
+                    <label>Fandefasa SMS (Sender):</label>
+                    <select id="test-sender">
+                        <option value="Mvola">Mvola</option>
+                        <option value="Orange">Orange Money</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fonosana SMS (Message Body):</label>
+                    <textarea id="test-sms-body" rows="3" placeholder="Ohatra: Feno ny Depot de 20000Ar pour 0341234567. Ref: TR2607. Solde: 150000Ar. Bonus: 200Ar"></textarea>
+                </div>
+                <button type="button" class="btn-submit btn-test" onclick="lancerTestSMSUnique()">TESTERO NY SMS</button>
+            </div>
+
+            <div class="card">
+                <h2>Paramètres / Configurations</h2>
+                <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom:14px;">App miasa 100% Offline mampiasa IndexedDB.</p>
+                <button type="button" class="btn-submit btn-export" onclick="exportToCSV()" style="margin-bottom: 10px;">💾 EXPORT NY BOKIN'NY VOLA</button>
+                <button class="btn-submit" style="background-color: var(--danger);" onclick="famafanaArovanaAminKaody()">FAFAHO NY DATA REHETRA (RESET)</button>
+            </div>
+        </div>
+
+        <div class="copyright-tag">
+           𓂃✍︎𓂃 Mr Mbola info © 2026𓂃🪶
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchTab('dashboard')"><div>📊</div><div>Dashboard</div></div>
+        <div class="nav-item" onclick="switchTab('journal')"><div>📖</div><div>Journal</div></div>
+        <div class="nav-item" onclick="switchTab('settings')"><div>🔧</div><div>Settings</div></div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
